@@ -36,7 +36,7 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
 // ============== //
 
 @batchSize(1)
-module testDeployment '../../../main.bicep' = [
+module testDeployment 'br:pxsmytinfsweacr1.azurecr.io/elements/res/key-vault/vault:0.10.2' = [
   for iteration in ['init', 'idem']: {
     scope: resourceGroup
     name: '${uniqueString(deployment().name, resourceLocation)}-test-${serviceShort}-${iteration}'
