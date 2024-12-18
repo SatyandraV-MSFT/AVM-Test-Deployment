@@ -1,5 +1,5 @@
-metadata name = 'Role definition assignable scopes (All scopes)'
-metadata description = 'This module deploys a Custom Role definition at a Management Group, Subscription or Resource Group scope.'
+metadata name = 'Role Assignments (All scopes)'
+metadata description = 'This module deploys a Role Assignment at a Management Group, Subscription or Resource Group scope.'
 metadata owner = 'Azure/module-maintainers'
 
 targetScope = 'managementGroup'

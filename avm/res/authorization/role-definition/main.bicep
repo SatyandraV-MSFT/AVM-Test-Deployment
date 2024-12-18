@@ -37,22 +37,27 @@ param location string = deployment().location
 @sys.description('Optional. Role definition assignable scopes. If not provided, will use the current scope provided.')
 param assignableScopes array = []
 
-@sys.description('Optional. Enable telemetry via a Globally Unique Identifier (GUID).')
-param enableDefaultTelemetry bool = true
+@sys.description('Optional. Enable/Disable usage telemetry for module.')
+param enableTelemetry bool = true
 
-var enableReferencedModulesTelemetry = false
-
-resource defaultTelemetry 'Microsoft.Resources/deployments@2021-04-01' = if (enableDefaultTelemetry) {
-  name: 'pid-47ed15a6-730a-4827-bcb4-0fd963ffbd82-${uniqueString(deployment().name, location)}'
-  location: location
+#disable-next-line no-deployments-resources
+resource avmTelemetry 'Microsoft.Resources/deployments@2024-03-01' = if (enableTelemetry) {
+  name: '46d3xbcp.res.authorization-roledefinition.${replace('-..--..-', '.', '-')}.${substring(uniqueString(deployment().name, location), 0, 4)}'
   properties: {
     mode: 'Incremental'
     template: {
       '$schema': 'https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#'
       contentVersion: '1.0.0.0'
       resources: []
+      outputs: {
+        telemetry: {
+          type: 'String'
+          value: 'For more information, see https://aka.ms/avm/TelemetryInfo'
+        }
+      }
     }
   }
+  location: location
 }
 
 module roleDefinition_mg 'management-group/main.bicep' = if (empty(subscriptionId) && empty(resourceGroupName)) {
@@ -65,8 +70,6 @@ module roleDefinition_mg 'management-group/main.bicep' = if (empty(subscriptionI
     notActions: !empty(notActions) ? notActions : []
     assignableScopes: !empty(assignableScopes) ? assignableScopes : []
     managementGroupId: managementGroupId
-    location: location
-    enableDefaultTelemetry: enableReferencedModulesTelemetry
   }
 }
 
@@ -82,8 +85,6 @@ module roleDefinition_sub 'subscription/main.bicep' = if (!empty(subscriptionId)
     notDataActions: !empty(notDataActions) ? notDataActions : []
     assignableScopes: !empty(assignableScopes) ? assignableScopes : []
     subscriptionId: subscriptionId
-    location: location
-    enableDefaultTelemetry: enableReferencedModulesTelemetry
   }
 }
 
@@ -100,15 +101,26 @@ module roleDefinition_rg 'resource-group/main.bicep' = if (!empty(resourceGroupN
     assignableScopes: !empty(assignableScopes) ? assignableScopes : []
     subscriptionId: subscriptionId
     resourceGroupName: resourceGroupName
-    enableDefaultTelemetry: enableReferencedModulesTelemetry
   }
 }
 
 @sys.description('The GUID of the Role Definition.')
-output name string = empty(subscriptionId) && empty(resourceGroupName) ? roleDefinition_mg.outputs.name : (!empty(subscriptionId) && empty(resourceGroupName) ? roleDefinition_sub.outputs.name : roleDefinition_rg.outputs.name)
+output name string = empty(subscriptionId) && empty(resourceGroupName)
+  ? roleDefinition_mg.outputs.name
+  : (!empty(subscriptionId) && empty(resourceGroupName)
+      ? roleDefinition_sub.outputs.name
+      : roleDefinition_rg.outputs.name)
 
 @sys.description('The resource ID of the Role Definition.')
-output resourceId string = empty(subscriptionId) && empty(resourceGroupName) ? roleDefinition_mg.outputs.resourceId : (!empty(subscriptionId) && empty(resourceGroupName) ? roleDefinition_sub.outputs.resourceId : roleDefinition_rg.outputs.resourceId)
+output resourceId string = empty(subscriptionId) && empty(resourceGroupName)
+  ? roleDefinition_mg.outputs.resourceId
+  : (!empty(subscriptionId) && empty(resourceGroupName)
+      ? roleDefinition_sub.outputs.resourceId
+      : roleDefinition_rg.outputs.resourceId)
 
 @sys.description('The scope this Role Definition applies to.')
-output scope string = empty(subscriptionId) && empty(resourceGroupName) ? roleDefinition_mg.outputs.scope : (!empty(subscriptionId) && empty(resourceGroupName) ? roleDefinition_sub.outputs.scope : roleDefinition_rg.outputs.scope)
+output scope string = empty(subscriptionId) && empty(resourceGroupName)
+  ? roleDefinition_mg.outputs.scope
+  : (!empty(subscriptionId) && empty(resourceGroupName)
+      ? roleDefinition_sub.outputs.scope
+      : roleDefinition_rg.outputs.scope)
