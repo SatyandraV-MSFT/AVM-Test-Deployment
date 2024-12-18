@@ -239,3 +239,4 @@ if ($PSCmdlet.ShouldProcess(('Building & generation of [{0}] modules in path [{1
         $job | Remove-Job -Force -ErrorAction 'SilentlyContinue'
     }
 }
+
