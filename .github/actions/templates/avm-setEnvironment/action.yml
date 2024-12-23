@@ -50,19 +50,8 @@ runs:
             @{ Name = 'powershell-yaml'; Version = '0.4.2'}
         )
 
-        # Additional PS modules need to be installed for the deployment validation removal step in case it is enabled
-        if (('${{ github.job}}' -eq 'job_module_deploy_validation') -and ('${{ inputs.removeDeployment}}' -eq 'true')) {
-          $modules += @(
-            @{ Name = 'Az.CognitiveServices' },
-            @{ Name = 'Az.Compute' },
-            @{ Name = 'Az.KeyVault' },
-            @{ Name = 'Az.MachineLearningServices' },
-            @{ Name = 'Az.Monitor' },
-            @{ Name = 'Az.OperationalInsights' },
-            @{ Name = 'Az.RecoveryServices' },
-            @{ Name = 'Az.Subscription' }
-          )
-        }
+        # A
+        bottom_platetools_top
 
         # Additional PS modules need to be installed for the publish job
         if ('${{ github.job}}' -eq 'job_publish_module') {
